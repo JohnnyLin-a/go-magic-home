@@ -1,5 +1,3 @@
-module github.com/moonliightz/magic-home
+module github.com/johnnylin-a/magic-home
 
-go 1.13
-
-require github.com/urfave/cli/v2 v2.1.1
+go 1.17
