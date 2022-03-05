@@ -38,11 +38,27 @@ func New(ip net.IP, port uint16) (*Controller, error) {
 
 // SetState can be used to switch the LED Strip on (magichome.On) or off (magichome.Off)
 func (c *Controller) SetState(s State) error {
+	var rawCmd []byte
 	if s == On {
-		_, err := c.conn.Write(c.command.on)
+		rawCmd = c.command.on
+	} else {
+		rawCmd = c.command.off
+	}
+
+	var checksum uint8
+	for _, val := range rawCmd {
+		checksum += val
+	}
+	checksum &= 0xFF
+
+	_, err := c.conn.Write(append(rawCmd, checksum))
+	if err != nil {
 		return err
 	}
-	_, err := c.conn.Write(c.command.off)
+
+	response := make([]byte, 14)
+	_, err = c.conn.Read(response)
+
 	return err
 }
 
